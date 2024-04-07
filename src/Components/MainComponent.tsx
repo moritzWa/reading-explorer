@@ -1,27 +1,52 @@
 import { trpc } from "@/app/_trpc/client";
+import { useState } from "react";
 
 function MainComponent() {
-  const getHelloWorldMsg = trpc.getHelloWorld.useQuery();
+  const [link, setLink] = useState("");
+  const getBackLinks = trpc.getBackLinks.useMutation();
 
-  const getBackLinks = trpc.getBackLinks.useQuery();
-
-  if (getHelloWorldMsg.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (getHelloWorldMsg.error) {
-    return <div>Error: {getHelloWorldMsg.error.message}</div>;
-  }
-
-  console.log(getHelloWorldMsg.data);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await getBackLinks.mutateAsync(link);
+  };
 
   return (
     <div>
-      <div>api reply: {getHelloWorldMsg.data?.data}</div>
-      <label htmlFor="input">
-        Link:
-        <input placeholder="put your article link here" />
-      </label>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="input">
+          Link:
+          <input
+            id="input"
+            placeholder="Put your article link here"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+          />
+        </label>
+        <button type="submit">Get Backlinks</button>
+      </form>
+
+      {getBackLinks.isLoading ? (
+        <div>Loading...</div>
+      ) : getBackLinks.error ? (
+        <div>Error: {getBackLinks.error.message}</div>
+      ) : (
+        <div>
+          <h2>Backlinks:</h2>
+          <ul>
+            {getBackLinks.data?.items.map((item: any, index: number) => (
+              <li key={index}>
+                <a
+                  href={item.url_from}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.domain_from}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
