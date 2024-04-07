@@ -3,6 +3,8 @@ import { trpc } from "@/app/_trpc/client";
 function MainComponent() {
   const getHelloWorldMsg = trpc.getHelloWorld.useQuery();
 
+  const getBackLinks = trpc.getBackLinks.useQuery();
+
   if (getHelloWorldMsg.isLoading) {
     return <div>Loading...</div>;
   }
