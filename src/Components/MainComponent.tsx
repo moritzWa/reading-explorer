@@ -56,3 +56,4 @@ export const MainComponent = () => {
     </div>
   );
 };
+

@@ -44,6 +44,28 @@ export const appRouter = router({
       throw error;
     }
   }),
+  getForwardLinks: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .query(async ({ input }) => {
+      try {
+        const response = await fetch(input.url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${input.url}: ${response.statusText}`);
+        }
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        const links = $("a")
+          .map((_: any, element: any) => $(element).attr("href"))
+          .get()
+          .filter((href: any) => href && href.startsWith("http"));
+        return {
+          data: links,
+        };
+      } catch (error) {
+        console.error(error);
+        throw new Error(`Error fetching links: ${error.message}`);
+      }
+    }),
 });
 
 export type AppRouter = typeof appRouter;
