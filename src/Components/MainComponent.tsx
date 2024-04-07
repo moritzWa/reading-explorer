@@ -1,19 +1,28 @@
 import { trpc } from "@/app/_trpc/client";
+import { useState } from "react";
 
 function MainComponent() {
-  const getHelloWorldMsg = trpc.getHelloWorld.useQuery();
+  const [url, setUrl] = useState('https://en.wikipedia.org/wiki/Climate_change');
+  const getForwardLinks = trpc.getForwardLinks.useQuery({ url }, {
+    enabled: url.length > 0
+  });
 
-  if (getHelloWorldMsg.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (getHelloWorldMsg.error) {
-    return <div>Error: {getHelloWorldMsg.error.message}</div>;
-  }
-
-  console.log(getHelloWorldMsg.data);
-
-  return <div>api reply: {getHelloWorldMsg.data?.data}</div>;
+  return (
+    <div style={{ width: "100%", overflow: "hidden" }}>
+      API reply:
+      <ul>
+        {getForwardLinks.data?.data.map((link, index) => {
+          return (
+            <li key={index}>
+              <a href={link} key={index}>
+                {link}
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
 }
 
 export default MainComponent;
