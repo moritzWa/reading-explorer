@@ -1,11 +1,11 @@
-import { useRouter } from "next/router";
+import { trpc } from "./_trpc/client";
 
 export default function Home() {
-  const router = useRouter();
+  const getHelloWorldMsg = trpc.getHelloWorld.useQuery();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      test
+      api reply: {getHelloWorldMsg.data}
     </main>
   );
 }
