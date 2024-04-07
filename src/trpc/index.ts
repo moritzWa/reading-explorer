@@ -1,8 +1,8 @@
 import { publicProcedure, router } from "./trpc";
 
 export const appRouter = router({
-  getHelloWorld: publicProcedure.query(() => {
-    return {
+  getHelloWorld: publicProcedure.query(async () => {
+    return await {
       data: "world",
     };
   }),
