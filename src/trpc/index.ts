@@ -1,4 +1,5 @@
 import axios from "axios";
+import cheerio from "cheerio";
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { DataForSEOBacklinkResponse } from "./types";
@@ -50,7 +51,9 @@ export const appRouter = router({
       try {
         const response = await fetch(input.url);
         if (!response.ok) {
-          throw new Error(`Failed to fetch ${input.url}: ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch ${input.url}: ${response.statusText}`
+          );
         }
         const html = await response.text();
         const $ = cheerio.load(html);
@@ -61,7 +64,7 @@ export const appRouter = router({
         return {
           data: links,
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
         throw new Error(`Error fetching links: ${error.message}`);
       }
