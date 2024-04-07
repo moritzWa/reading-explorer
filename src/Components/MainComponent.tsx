@@ -13,7 +13,15 @@ function MainComponent() {
 
   console.log(getHelloWorldMsg.data);
 
-  return <div>api reply: {getHelloWorldMsg.data?.data}</div>;
+  return (
+    <div>
+      <div>api reply: {getHelloWorldMsg.data?.data}</div>
+      <label htmlFor="input">
+        Link:
+        <input placeholder="put your article link here" />
+      </label>
+    </div>
+  );
 }
 
 export default MainComponent;
