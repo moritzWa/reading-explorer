@@ -20,10 +20,9 @@ export const appRouter = router({
         const html = await response.text();
         const $ = cheerio.load(html);
         const links = $("a")
-          .map((_, element) => $(element).attr("href"))
+          .map((_: any, element: any) => $(element).attr("href"))
           .get()
-          .filter((href) => href && href.startsWith("http"));
-        console.log(links)
+          .filter((href: any) => href && href.startsWith("http"));
         return {
           data: links,
         };
