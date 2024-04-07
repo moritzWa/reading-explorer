@@ -1,6 +1,7 @@
 import axios from "axios";
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
+import { DataForSEOBacklinkResponse } from "./types";
 
 export const appRouter = router({
   getHelloWorld: publicProcedure.query(async () => {
@@ -14,25 +15,34 @@ export const appRouter = router({
       `${process.env.DATA_FOR_SEO_LOGIN}:${process.env.DATA_FOR_SEO_PASSWORD}`
     ).toString("base64");
 
-    const response = await axios.post(
-      "https://api.dataforseo.com/v3/backlinks/backlinks/live",
-      [
-        {
-          target: link,
-          mode: "as_is",
-          filters: ["dofollow", "=", true],
-          limit: 10,
-        },
-      ],
-      {
-        headers: {
-          Authorization: `Basic ${cred}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    console.log("link", link);
+    console.log("cred", cred);
 
-    return response.data.tasks[0].result;
+    try {
+      const response = await axios.post(
+        "https://api.dataforseo.com/v3/backlinks/backlinks/live",
+        [
+          {
+            target: link,
+            mode: "as_is",
+            filters: ["dofollow", "=", true],
+            limit: 10,
+          },
+        ],
+        {
+          headers: {
+            Authorization: `Basic ${cred}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("response.data", response.data);
+
+      return response.data.tasks[0].result as DataForSEOBacklinkResponse;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }),
 });
 

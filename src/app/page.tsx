@@ -1,6 +1,6 @@
 "use client";
 
-import MainComponent from "@/Components/MainComponent";
+import { MainComponent } from "@/Components/MainComponent";
 
 export default function Home() {
   return (

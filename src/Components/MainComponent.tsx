@@ -1,13 +1,19 @@
+"use client";
+
 import { trpc } from "@/app/_trpc/client";
+import { DataForSEOBacklinkResponse } from "@/trpc/types";
 import { useState } from "react";
 
-function MainComponent() {
+export const MainComponent = () => {
   const [link, setLink] = useState("");
-  const getBackLinks = trpc.getBackLinks.useMutation();
+  const { data, isLoading, error, refetch } =
+    trpc.getBackLinks.useQuery<DataForSEOBacklinkResponse>(link, {
+      enabled: false,
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await getBackLinks.mutateAsync(link);
+    await refetch();
   };
 
   return (
@@ -25,15 +31,15 @@ function MainComponent() {
         <button type="submit">Get Backlinks</button>
       </form>
 
-      {getBackLinks.isLoading ? (
+      {isLoading ? (
         <div>Loading...</div>
-      ) : getBackLinks.error ? (
-        <div>Error: {getBackLinks.error.message}</div>
+      ) : error ? (
+        <div>Error: {error.message}</div>
       ) : (
         <div>
           <h2>Backlinks:</h2>
           <ul>
-            {getBackLinks.data?.items.map((item: any, index: number) => (
+            {data?.items.map((item, index) => (
               <li key={index}>
                 <a
                   href={item.url_from}
@@ -49,6 +55,4 @@ function MainComponent() {
       )}
     </div>
   );
-}
-
-export default MainComponent;
+};
