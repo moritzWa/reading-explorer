@@ -83,7 +83,7 @@ export const appRouter = router({
       const { inputText, comparisonText } = input;
 
       try {
-        const response = await openai.chat.completions.create({
+        const response: any = await openai.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [
             {
@@ -106,28 +106,30 @@ export const appRouter = router({
         throw new Error("Failed to analyze texts");
       }
     }),
-  summarizeUrl: publicProcedure.input(z.object({ url: z.string().url() })).query(async ({ input }) => {
-    const { url } = input;
-    try {
-      const response = await axios.post(
-        "https://api.apyhub.com/ai/summarize-url",
-        {
-          url
-        },
-        {
-          headers: {
-            "apy-token": process.env.APYHUB_API_KEY,
-            "Content-Type": "application/json",
+  summarizeUrl: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .query(async ({ input }) => {
+      const { url } = input;
+      try {
+        const response = await axios.post(
+          "https://api.apyhub.com/ai/summarize-url",
+          {
+            url,
+          },
+          {
+            headers: {
+              "apy-token": process.env.APYHUB_API_KEY,
+              "Content-Type": "application/json",
+            },
           }
-        }
-      );
+        );
 
-      return response.data
-    } catch (error) {
-      console.error("Error calling apyhub API:", error);
-      throw new Error("Failed to summarize URL");
-    }
-  })
+        return response.data;
+      } catch (error) {
+        console.error("Error calling apyhub API:", error);
+        throw new Error("Failed to summarize URL");
+      }
+    }),
 });
 
 export type AppRouter = typeof appRouter;
