@@ -42,3 +42,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 For text summarization use this: https://apyhub.com/utility/ai-summarize
 
 Add key as `APYHUB_API_KEY=`
+
+# Steps
+
+1. Get all links (backlink + forwardlink)
+2. Summarize each link, and the original article (SUMMARIZE)
+3. Compare all links to the original article (OPENAI)
+4. Display all of it
