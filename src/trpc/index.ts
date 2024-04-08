@@ -115,10 +115,10 @@ export const appRouter = router({
   getAllLinks: publicProcedure.input(z.string()).query(async (req) => {
     const link = req.input as string;
     const backlinks = await getBackLinks(link);
-    const forwardlinks = await getForwardLinks(link);
+    // const forwardlinks = await getForwardLinks(link);
 
 
-    const allLinks = [...backlinks, ...forwardlinks];
+    const allLinks = [...backlinks];
 
     const summarizedLinks: LinkWithSummary[] = [];
 
