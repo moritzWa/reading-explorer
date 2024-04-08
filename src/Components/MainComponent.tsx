@@ -26,15 +26,20 @@ export const MainComponent = () => {
 
   console.log("data", data);
 
+  const dummyArticle = {
+    url_from: "remnote.com",
+    page_from_title: "RemNote",
+  };
+
   return (
     <div>
       <div className="flex justify-center mb-10">
-        <Image src="/dora-logo.svg" alt="Dora Logo" width={200} height={200} />
+        <Image src="/dora-logo.svg" alt="Dora Logo" width={200} height={100} />
       </div>
       <form onSubmit={handleSubmit}>
         <label htmlFor="input">
           <input
-            className="min-w-[300px] text-xl p-8 rounded-full"
+            className="min-w-[300px] text-xl py-4 px-8 rounded-full"
             id="input"
             placeholder="Put your article link here"
             value={link}
@@ -42,7 +47,7 @@ export const MainComponent = () => {
           />
         </label>
         <button
-          className="bg-blue-500 ml-5 text-xl text-white p-8 rounded-full"
+          className="bg-blue-500 ml-5 text-xl text-white py-4 px-8 rounded-full cursor-pointer"
           type="submit"
         >
           Get Backlinks
@@ -59,15 +64,13 @@ export const MainComponent = () => {
         <div>No backlinks found.</div>
       ) : submitted ? (
         <div>
-          <h2>Backlinks:</h2>
-          <div>
-            {data &&
+          {/* {data &&
               data[0].items.map(
                 (item: DataForSEOBacklinkItem, index: number) => (
                   <Article key={index} item={item} />
                 )
-              )}
-          </div>
+              )} */}
+          <Article key={1} item={dummyArticle as DataForSEOBacklinkItem} />
         </div>
       ) : null}
     </div>
