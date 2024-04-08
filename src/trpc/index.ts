@@ -76,19 +76,16 @@ async function summarizeUrl(url: string): Promise<string> {
 
     return response.data.data.summary;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw new Error("Failed to summarize URL");
   }
 }
-
 
 async function getForwardLinks(url: string) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch ${url}: ${response.statusText}`
-      );
+      throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
     }
     const html = await response.text();
     const $ = cheerio.load(html);
@@ -96,7 +93,7 @@ async function getForwardLinks(url: string) {
       .map((_: any, element: any) => $(element).attr("href"))
       .get()
       .filter((href: any) => href && href.startsWith("http"));
-    return links
+    return links;
   } catch (error: any) {
     console.error(error);
     throw new Error(`Error fetching getForwardLinks: ${error.message}`);
@@ -116,7 +113,6 @@ export const appRouter = router({
     const link = req.input as string;
     const backlinks = await getBackLinks(link);
     // const forwardlinks = await getForwardLinks(link);
-
 
     const allLinks = [...backlinks];
 
@@ -192,45 +188,45 @@ export const appRouter = router({
         throw new Error(`Error fetching getForwardLinks: ${error.message}`);
       }
     }),
-  // compareTexts: publicProcedure
-  //   .input(
-  //     z.object({
-  //       inputText: z.string(),
-  //       comparisonText: z.string(),
-  //     })
-  //   )
-  //   .query(async ({ input }) => {
-  //     const { inputText, comparisonText } = input;
+  compareTexts: publicProcedure
+    .input(
+      z.object({
+        inputText: z.string(),
+        comparisonText: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { inputText, comparisonText } = input;
 
-  //     try {
-  //       const response: any = await openai.chat.completions.create({
-  //         model: "gpt-3.5-turbo",
-  //         messages: [
-  //           {
-  //             role: "system",
-  //             content:
-  //               "You are a helpful comparison agent that takes an input text and a comparison text and determines whether the comparison text represents a 'similar' or 'constituent' relationship to the input text. A 'similar' text would help a person explore more about the topic of the input text, while a 'constituent' text would help a person understand the input text better.",
-  //           },
-  //           {
-  //             role: "user",
-  //             content: `Determine if the following comparison text helps in understanding (constituent) or explores beyond the input text (similar). Your output should {"classification": "similar"|"constituent"}. Input text: "${inputText}". Comparison text: "${comparisonText}".`,
-  //           },
-  //         ],
-  //       });
+      try {
+        const response: any = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful comparison agent that takes an input text and a comparison text and determines whether the comparison text represents a 'similar' or 'constituent' relationship to the input text. A 'similar' text would help a person explore more about the topic of the input text, while a 'constituent' text would help a person understand the input text better.",
+            },
+            {
+              role: "user",
+              content: `Determine if the following comparison text helps in understanding (constituent) or explores beyond the input text (similar). Your output should {"classification": "similar"|"constituent"}. Input text: "${inputText}". Comparison text: "${comparisonText}".`,
+            },
+          ],
+        });
 
-  //       const parsedResponse = JSON.parse(response.choices[0].message.content);
+        const parsedResponse = JSON.parse(response.choices[0].message.content);
 
-  //       return parsedResponse;
-  //     } catch (error) {
-  //       console.error("Error calling OpenAI API:", error);
-  //       throw new Error("Failed to analyze texts");
-  //     }
-  //   }),
+        return parsedResponse;
+      } catch (error) {
+        console.error("Error calling OpenAI API:", error);
+        throw new Error("Failed to analyze texts");
+      }
+    }),
   summarizeUrl: publicProcedure
     .input(z.object({ url: z.string().url() }))
     .query(async ({ input }) => {
       const { url } = input;
-      console.log("----URL", url)
+      console.log("----URL", url);
       try {
         const response = await axios.post(
           "https://api.apyhub.com/ai/summarize-url",
@@ -245,7 +241,7 @@ export const appRouter = router({
           }
         );
 
-        console.log("res", response)
+        console.log("res", response);
 
         return response.data;
       } catch (error) {
