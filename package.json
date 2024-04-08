@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dhaiwat10/react-link-preview": "^1.15.0",
     "@tanstack/react-query": "^5.29.0",
     "@trpc/client": "^11.0.0-rc.332",
     "@trpc/next": "^11.0.0-rc.332",
