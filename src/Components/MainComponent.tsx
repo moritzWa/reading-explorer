@@ -1,10 +1,7 @@
 "use client";
 
 import { trpc } from "@/app/_trpc/client";
-import {
-  DataForSEOBacklinkItem,
-  DataForSEOBacklinkResponse,
-} from "@/trpc/types";
+import { LinkWithSummary } from "@/trpc";
 import Image from "next/image";
 import { useState } from "react";
 import Article from "./Article";
@@ -12,8 +9,8 @@ import Article from "./Article";
 export const MainComponent = () => {
   const [link, setLink] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const { data, isLoading, error, refetch } = trpc.getBackLinks.useQuery<
-    DataForSEOBacklinkResponse[]
+  const { data, isLoading, error, refetch } = trpc.getAllLinks.useQuery<
+    LinkWithSummary[]
   >(link, {
     enabled: false,
   });
@@ -60,15 +57,14 @@ export const MainComponent = () => {
         <div>Error: {error.message}</div>
       ) : !data && submitted ? (
         <div>Loading data...</div>
-      ) : data && data[0] && data[0].items && data[0].items.length === 0 ? (
+      ) : data && data.length === 0 ? (
         <div>No backlinks found.</div>
       ) : submitted ? (
         <div>
           {data &&
-            data[0].items.map((item: DataForSEOBacklinkItem, index: number) => (
+            data.map((item: LinkWithSummary, index: number) => (
               <Article key={index} item={item} />
             ))}
-          {/* <Article key={1} item={dummyArticle as DataForSEOBacklinkItem} /> */}
         </div>
       ) : null}
     </div>

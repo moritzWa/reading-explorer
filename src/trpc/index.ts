@@ -12,7 +12,7 @@ interface Link {
   url: string;
   title: string;
 }
-interface LinkWithSummary {
+export interface LinkWithSummary {
   url: string;
   title: string;
   summary: string;
@@ -62,7 +62,7 @@ async function getBackLinks(link: string): Promise<Link[]> {
 interface Summary {
   summary: string;
 }
-async function summarizeUrl(url: string): Promise<Summary> {
+async function summarizeUrl(url: string): Promise<string> {
   try {
     const response = await axios.post(
       "https://api.apyhub.com/ai/summarize-url",
@@ -105,14 +105,14 @@ export const appRouter = router({
 
     for (const link of allLinks) {
       const summary = await summarizeUrl(link.url);
-      summarizedLinks.push({ link, summary });
+      summarizedLinks.push({
+        url: link.url,
+        title: link.title,
+        summary: summary,
+      });
     }
 
-    summarizedLinks.push({
-      url: link.url,
-      title: link.title,
-      summary: summary.summary,
-    });
+    return summarizedLinks;
   }),
   getBackLinks: publicProcedure.input(z.string()).query(async (req) => {
     const link = req.input;
