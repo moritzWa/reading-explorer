@@ -21,7 +21,7 @@ function Article({ item, key }: { item: any; key: number }) {
             rel="noopener noreferrer"
             className="text-indigo-600 hover:text-indigo-900"
           >
-            Read more
+            {item.url}
           </a>
         </div>
       </div>

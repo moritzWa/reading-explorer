@@ -30,7 +30,7 @@ async function getBackLinks(link: string): Promise<Link[]> {
           target: link,
           mode: "as_is",
           filters: ["dofollow", "=", true],
-          limit: 10,
+          limit: 3,
         },
       ],
       {
@@ -42,9 +42,7 @@ async function getBackLinks(link: string): Promise<Link[]> {
     );
 
     // Extract the items from the response
-    const items = response.data.tasks[0].result;
-
-    console.log("items", items);
+    const items = response.data.tasks[0].result[0].items;
 
     // Map the items to an array of Link objects
     const links: Link[] = items.map((item: any) => ({
@@ -54,7 +52,6 @@ async function getBackLinks(link: string): Promise<Link[]> {
 
     return links;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 }
@@ -77,10 +74,32 @@ async function summarizeUrl(url: string): Promise<string> {
       }
     );
 
-    return response.data.summary;
+    return response.data.data.summary;
   } catch (error) {
-    console.error("Error calling apyhub API:", error);
+    console.log(error)
     throw new Error("Failed to summarize URL");
+  }
+}
+
+
+async function getForwardLinks(url: string) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch ${url}: ${response.statusText}`
+      );
+    }
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    const links = $("a")
+      .map((_: any, element: any) => $(element).attr("href"))
+      .get()
+      .filter((href: any) => href && href.startsWith("http"));
+    return links
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Error fetching getForwardLinks: ${error.message}`);
   }
 }
 
@@ -96,10 +115,10 @@ export const appRouter = router({
   getAllLinks: publicProcedure.input(z.string()).query(async (req) => {
     const link = req.input as string;
     const backlinks = await getBackLinks(link);
-    // const forwardlinks = await getForwardLinks(link);
+    const forwardlinks = await getForwardLinks(link);
 
-    const allLinks = [...backlinks];
-    // const allLinks = [...backlinks, ...forwardlinks];
+
+    const allLinks = [...backlinks, ...forwardlinks];
 
     const summarizedLinks: LinkWithSummary[] = [];
 
@@ -211,6 +230,7 @@ export const appRouter = router({
     .input(z.object({ url: z.string().url() }))
     .query(async ({ input }) => {
       const { url } = input;
+      console.log("----URL", url)
       try {
         const response = await axios.post(
           "https://api.apyhub.com/ai/summarize-url",
@@ -224,6 +244,8 @@ export const appRouter = router({
             },
           }
         );
+
+        console.log("res", response)
 
         return response.data;
       } catch (error) {
