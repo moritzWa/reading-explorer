@@ -34,4 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
 # reading-explorer
+
+# Text summarization
+
+For text summarization use this: https://apyhub.com/utility/ai-summarize
+
+Add key as `APYHUB_API_KEY=`
+
+# Steps
+
+1. Get all links (backlink + forwardlink)
+2. Summarize each link, and the original article (SUMMARIZE)
+3. Compare all links to the original article (OPENAI)
+4. Display all of it
