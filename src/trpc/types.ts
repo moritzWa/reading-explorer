@@ -1,4 +1,4 @@
-export type DataForSEOBacklink = {
+export type DataForSEOBacklinkItem = {
   type: "backlink";
   domain_from: string;
   url_from: string;
@@ -63,5 +63,5 @@ export type DataForSEOBacklinkResponse = {
   custom_mode: null;
   total_count: number;
   items_count: number;
-  items: DataForSEOBacklink[];
+  items: DataForSEOBacklinkItem[];
 };
