@@ -56,9 +56,6 @@ async function getBackLinks(link: string): Promise<Link[]> {
   }
 }
 
-interface Summary {
-  summary: string;
-}
 async function summarizeUrl(url: string): Promise<string> {
   try {
     const response = await axios.post(
