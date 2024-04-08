@@ -54,7 +54,7 @@ export const MainComponent = () => {
         </button>
       </form>
 
-      {/* {submitted && isLoading ? (
+      {submitted && isLoading ? (
         <div>Loading...</div>
       ) : error ? (
         <div>Error: {error.message}</div>
@@ -62,17 +62,15 @@ export const MainComponent = () => {
         <div>Loading data...</div>
       ) : data && data[0] && data[0].items && data[0].items.length === 0 ? (
         <div>No backlinks found.</div>
-      ) : submitted ? ( */}
-      <div>
-        {/* {data &&
-              data[0].items.map(
-                (item: DataForSEOBacklinkItem, index: number) => (
-                  <Article key={index} item={item} />
-                )
-              )} */}
-        <Article key={1} item={dummyArticle as DataForSEOBacklinkItem} />
-      </div>
-      {/* ) : null} */}
+      ) : submitted ? (
+        <div>
+          {data &&
+            data[0].items.map((item: DataForSEOBacklinkItem, index: number) => (
+              <Article key={index} item={item} />
+            ))}
+          {/* <Article key={1} item={dummyArticle as DataForSEOBacklinkItem} /> */}
+        </div>
+      ) : null}
     </div>
   );
 };

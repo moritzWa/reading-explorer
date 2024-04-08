@@ -7,11 +7,112 @@ import { DataForSEOBacklinkResponse } from "./types";
 
 const openai = new OpenAI();
 
+// HELPERS
+interface Link {
+  url: string;
+  title: string;
+}
+interface LinkWithSummary {
+  url: string;
+  title: string;
+  summary: string;
+}
+async function getBackLinks(link: string): Promise<Link[]> {
+  const cred = Buffer.from(
+    `${process.env.DATA_FOR_SEO_LOGIN}:${process.env.DATA_FOR_SEO_PASSWORD}`
+  ).toString("base64");
+
+  try {
+    const response = await axios.post(
+      "https://api.dataforseo.com/v3/backlinks/backlinks/live",
+      [
+        {
+          target: link,
+          mode: "as_is",
+          filters: ["dofollow", "=", true],
+          limit: 10,
+        },
+      ],
+      {
+        headers: {
+          Authorization: `Basic ${cred}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Extract the items from the response
+    const items = response.data.tasks[0].result;
+
+    console.log("items", items);
+
+    // Map the items to an array of Link objects
+    const links: Link[] = items.map((item: any) => ({
+      url: item.url_from,
+      title: item.page_from_title,
+    }));
+
+    return links;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+interface Summary {
+  summary: string;
+}
+async function summarizeUrl(url: string): Promise<Summary> {
+  try {
+    const response = await axios.post(
+      "https://api.apyhub.com/ai/summarize-url",
+      {
+        url,
+      },
+      {
+        headers: {
+          "apy-token": process.env.APYHUB_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data.summary;
+  } catch (error) {
+    console.error("Error calling apyhub API:", error);
+    throw new Error("Failed to summarize URL");
+  }
+}
+
+// getBacklinks
+
+// ROUTES
 export const appRouter = router({
   getHelloWorld: publicProcedure.query(async () => {
     return await {
       data: "world",
     };
+  }),
+  getAllLinks: publicProcedure.input(z.string()).query(async (req) => {
+    const link = req.input as string;
+    const backlinks = await getBackLinks(link);
+    // const forwardlinks = await getForwardLinks(link);
+
+    const allLinks = [...backlinks];
+    // const allLinks = [...backlinks, ...forwardlinks];
+
+    const summarizedLinks: LinkWithSummary[] = [];
+
+    for (const link of allLinks) {
+      const summary = await summarizeUrl(link.url);
+      summarizedLinks.push({ link, summary });
+    }
+
+    summarizedLinks.push({
+      url: link.url,
+      title: link.title,
+      summary: summary.summary,
+    });
   }),
   getBackLinks: publicProcedure.input(z.string()).query(async (req) => {
     const link = req.input;
@@ -69,7 +170,7 @@ export const appRouter = router({
         };
       } catch (error: any) {
         console.error(error);
-        throw new Error(`Error fetching links: ${error.message}`);
+        throw new Error(`Error fetching getForwardLinks: ${error.message}`);
       }
     }),
   compareTexts: publicProcedure
